@@ -1,0 +1,28 @@
+<div class="container mt-5 mb-5">
+   <div class="row">
+      <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+         {{#if error}}
+            <div class="alert alert-danger">{{error}}</div>
+         {{/if}}
+         <form method="post" action="/generate" class="card shadow" enctype="multipart/form-data">
+            <div class="card-header bg-white">
+               <h1>Generate Sertificate</h1>
+            </div>
+            <div class="card-body">
+               <div class="mb-3">
+                  <label for="file" class="form-label">Faylni tanlang</label>
+                  <select name="file" id="file" class="form-control">
+                     <option value="">Tanlang</option>
+                     {{#each files}}
+                        <option value="{{_id}}">{{fileName}}</option>
+                     {{/each}}
+                  </select>
+               </div>
+            </div>
+            <div class="card-footer bg-white">
+               <button class="btn btn-primary">Generate</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>

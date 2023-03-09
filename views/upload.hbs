@@ -1,0 +1,35 @@
+<div class="container mt-5 mb-5">
+   <div class="row">
+      <div class="col-lg-8 offset-lg-2 col-md-10 offset-md-1">
+         {{#if error}}
+            <div class="alert alert-danger">{{error}}</div>
+         {{/if}}
+         <form method="post" action="/upload" class="card shadow" enctype="multipart/form-data">
+            <div class="card-header bg-white">
+               <h1>File upload</h1>
+            </div>
+            <div class="card-body">
+               <div class="mb-3">
+                  <label for="course" class="form-label">Kursni tanlang</label>
+                  <select name="course" id="course" class="form-control">
+                     <option value="">Tanlang</option>
+                     <option value="android">Android</option>
+                     <option value="frontend">Frontend</option>
+                     <option value="backend">Backend</option>
+                     <option value="graphic">Grafika</option>
+                     <option value="robotics">Robototexnika</option>
+                     <option value="computer">Kompyuter savodxonligi</option>
+                  </select>
+               </div>
+               <div class="mb-3">
+                  <label for="file" class="form-label">Faylni yuklang</label>
+                  <input type="file" class="form-control" name="file" id="file">
+               </div>
+            </div>
+            <div class="card-footer bg-white">
+               <button class="btn btn-primary">Yuklash</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>

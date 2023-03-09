@@ -1,0 +1,54 @@
+<div class="container mt-5 mb-5">
+   <div class="row">
+      {{#if sertificates}}
+         <div class="col-12">
+            {{#if error}}
+               <div class="alert alert-danger text-center">{{error}}</div>
+            {{/if}}
+            <div class="d-flex align-items-center justify-content-between">
+               <a href="/islom/download" class="btn btn-primary">Barchasini yuklab olish</a>
+               <form action="/delete" method="post">
+                  <button class="btn btn-danger">
+                     Barchasini o'chirish
+                  </button>
+               </form>
+            </div>
+            <div class="table-responsive mt-4">
+               <table class="text-center table table-hover table-striped table-bordered">
+                  <thead>
+                     <tr>
+                        <th>#</th>
+                        <th>Ismi</th>
+                        <th>ID</th>
+                        <th>Yuklash</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     {{#each sertificates}}
+                        <tr>
+                           <td class="index">0</td>
+                           <td>{{fullName}}</td>
+                           <td>{{sertificateId}}</td>
+                           <td>
+                              <a download href="https://certificate.tezzkor.com{{file}}" class="btn btn-primary">
+                                 Ko'rish
+                              </a>
+                           </td>
+                        </tr>
+                     {{/each}}
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      {{else}}
+         <div class="alert alert-dark text-center">sertifikatlar mavjud emas</div>
+      {{/if}}
+   </div>
+</div>
+
+<script>
+   const indexes = document.querySelectorAll('.index')
+   indexes.forEach(function(item, index){
+      item.innerHTML = index+1
+   })
+</script>
