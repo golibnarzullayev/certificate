@@ -6,7 +6,10 @@
                <div class="alert alert-danger text-center">{{error}}</div>
             {{/if}}
             <div class="d-flex align-items-center justify-content-between">
-               <a href="/islom/download" class="btn btn-primary">Barchasini yuklab olish</a>
+               <div>
+                  <a href="/islom/download" class="btn btn-primary">Barchasini yuklab olish</a>
+                  <a href="/islom/export-pdf" class="btn btn-primary">PDF Export</a>
+               </div>
                <form action="/delete" method="post">
                   <button class="btn btn-danger">
                      Barchasini o'chirish

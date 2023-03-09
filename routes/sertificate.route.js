@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { homePage, uploadPage, upload, generatePage, generate, deleteAll, download } = require('../controllers/sertificate.controller');
+const { homePage, uploadPage, upload, generatePage, generate, deleteAll, download, exportPDF } = require('../controllers/sertificate.controller');
 const { protected } = require('../middlewares/auth')
 
 router.get('/islom', protected, homePage)
 router.get('/islom/upload', protected, uploadPage)
 router.get('/islom/download', protected, download)
+router.get('/islom/export-pdf', protected, exportPDF)
 router.post('/upload', protected, upload)
 router.get('/islom/generate', protected, generatePage)
 router.post('/generate', protected, generate)

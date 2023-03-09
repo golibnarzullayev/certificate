@@ -8,13 +8,14 @@ const Jimp = require('jimp');
 const qr = require('qrcode');
 const moment = require('moment');
 const util = require('util');
+const { createPDF } = require('../utils/createPdf');
 const publicPath = path.join(__dirname, '..', 'public', 'create');
 const zipFileName = 'public_files.zip';
 const unlinkFile = util.promisify(fs.unlink);
 
 exports.homePage = async (req, res) => {
-   const isLogged = req.session.isLogged;
    try {
+      const isLogged = req.session.isLogged;
       const downloadErr = req.flash('downloadErr')[0]
       const sertificates = await Sertificate.find().lean();
       res.render('home', {
@@ -119,7 +120,11 @@ exports.generate = async (req, res) => {
                obj[keys[j]] = item[j]
             }
             users.push(obj);
-            await renderImage(obj, pathName)
+            if (pathName === 'davlat') {
+               await renderGovernmentImage(obj, pathName)
+            } else {
+               await renderImage(obj, pathName)
+            }
          }
       }
 
@@ -144,6 +149,14 @@ exports.deleteAll = async (req, res) => {
       await Sertificate.deleteMany()
 
       res.redirect('/islom');
+   } catch (err) {
+      console.log(err);
+   }
+}
+
+exports.exportPDF = async (req, res) => {
+   try {
+      await createPDF(res);
    } catch (err) {
       console.log(err);
    }
@@ -206,6 +219,82 @@ async function renderImage(user, pathName) {
 
       image.print(
          font_42,
+         dateTextData.placementX,
+         dateTextData.placementY,
+         dateTextData.text
+      )
+
+      // /export/${pathName}/${user.fileName}_${user.id}.png
+      await image.quality(100).writeAsync(path.join(__dirname, '..', 'public', 'create', `${user.id}.png`));
+
+      await Sertificate.create({
+         fullName: user.fullName,
+         file: `/sertificate/${user.id}.png`,
+         sertificateId: user.id
+      })
+      
+   } catch (err) {
+      console.log(err);
+   }
+}
+
+async function renderGovernmentImage(user, pathName) {
+   try {
+      const imgRaw = path.join(__dirname, '..', 'public', 'active', pathName, 'active.png');
+      const montserrat_40_path = path.join(__dirname, '..', 'public', 'fonts', 'montserrat_40.ttf.fnt');
+      const montserrat_47_path = path.join(__dirname, '..', 'public', 'fonts', 'montserrat_47.ttf.fnt');
+      const montserrat_100_path = path.join(__dirname, '..', 'public', 'fonts', 'montserrat_100.ttf.fnt');
+
+      const montserrat_40 = await Jimp.loadFont(montserrat_40_path)
+      const montserrat_47 = await Jimp.loadFont(montserrat_47_path)
+      const montserrat_100 = await Jimp.loadFont(montserrat_100_path)
+
+      const fullNameTextData = {
+         text: user.fullName.toUpperCase(),
+         placementX: 450,
+         placementY: 730
+      }
+
+      const idTextData = {
+         text: `ID: ${user.id}`,
+         placementX: 1950,
+         placementY: 1310
+      }
+
+      const dateTextData = {
+         text: moment(user.date).format('DD.MM.YYYY'),
+         placementX: 1950,
+         placementY: 1425
+      }
+
+      const url = `https://certificate.tezzkor.com/certificate/${user.id}.png`;
+
+      const options = {
+         type: 'png'
+      };
+      const outputPath = path.join(__dirname, '..', 'public', 'qr', `${user.id}.png`)
+      await qr.toFile(outputPath, url, options);
+      const image = await Jimp.read(imgRaw);
+      const qrCodeUrl = path.join(__dirname, '..', 'public', 'qr', `${user.id}.png`);
+      const qrImage = await Jimp.read(qrCodeUrl);
+      qrImage.resize(314, 314);
+
+      image.composite(qrImage, 2077, 110)
+
+      image.print(montserrat_100, fullNameTextData.placementX, fullNameTextData.placementY, {
+         text: fullNameTextData.text,
+         alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+      }, 1640)
+
+      image.print(
+         montserrat_40,
+         idTextData.placementX,
+         idTextData.placementY,
+         idTextData.text
+      )
+
+      image.print(
+         montserrat_47,
          dateTextData.placementX,
          dateTextData.placementY,
          dateTextData.text
