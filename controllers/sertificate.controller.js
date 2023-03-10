@@ -257,14 +257,14 @@ async function renderGovernmentImage(user, pathName) {
 
       const idTextData = {
          text: `ID: ${user.id}`,
-         placementX: 1950,
-         placementY: 1310
+         placementX: 2200,
+         placementY: 1650,
       }
 
       const dateTextData = {
          text: moment(user.date).format('DD.MM.YYYY'),
-         placementX: 1950,
-         placementY: 1425
+         placementX: 1150,
+         placementY: 1130
       }
 
       const url = `https://certificate.tezzkor.com/certificate/${user.id}.png`;
@@ -290,7 +290,7 @@ async function renderGovernmentImage(user, pathName) {
          montserrat_40,
          idTextData.placementX,
          idTextData.placementY,
-         idTextData.text
+         
       )
 
       image.print(
