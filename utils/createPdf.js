@@ -1,10 +1,12 @@
 const fs = require('fs');
+const fsExtra = require('fs-extra');
 const PDFDocument = require('pdfkit');
 const Sertificate = require('../models/sertificate.model');
 const path = require('path');
-const open = require('open')
+const https = require('https')
+const http = require('http')
 
-exports.createPDF = async (res) => {
+exports.createPDF = async (res, unlinkFile) => {
    try {
       const doc = new PDFDocument();
       const sertificates = await Sertificate.find();
@@ -49,9 +51,12 @@ exports.createPDF = async (res) => {
 
       await new Promise((resolve) => file.on('finish', resolve));
 
-      await open(outputPath);
-
-      res.redirect('/islom')
+      res.download(outputPath, `${fileName}.pdf`, async function(err) {
+         if (err) {
+           req.flash('downloadErr', 'Fayl yuklab olishda xatolik yuz berdi')
+         }
+         await unlinkFile(outputPath);
+      });
    } catch (err) {
       console.log(err);
    }

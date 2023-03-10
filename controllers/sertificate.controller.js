@@ -156,7 +156,7 @@ exports.deleteAll = async (req, res) => {
 
 exports.exportPDF = async (req, res) => {
    try {
-      await createPDF(res);
+      await createPDF(res, unlinkFile);
    } catch (err) {
       console.log(err);
    }
