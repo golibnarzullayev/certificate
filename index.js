@@ -38,12 +38,13 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', './views');
 
+
+app.use('/', indexRoute);
 app.get('*', (req, res) => {
    res.render('notfound.hbs', {
       title: 'Bunday sayt mavjud emas'
    })
 })
-app.use('/', indexRoute);
 
 const port = process.env.PORT || 4000;
 app.listen(port, async () => {
