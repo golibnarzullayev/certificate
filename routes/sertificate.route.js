@@ -3,6 +3,11 @@ const router = express.Router();
 const { homePage, uploadPage, upload, generatePage, generate, deleteAll, download, exportPDF } = require('../controllers/sertificate.controller');
 const { protected } = require('../middlewares/auth')
 
+router.get('/', (req, res) => {
+   res.render('homepage', {
+      title: "Home page"
+   })
+})
 router.get('/islom', protected, homePage)
 router.get('/islom/upload', protected, uploadPage)
 router.get('/islom/download', protected, download)

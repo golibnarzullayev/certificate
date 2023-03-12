@@ -6,13 +6,15 @@
             {{#if error}}
                <div class="alert alert-danger text-center">{{error}}</div>
             {{/if}}
-            <div class="d-flex align-items-center justify-content-between">
-               <div>
-                  <a href="/islom/download" class="btn btn-primary">Barchasini yuklab olish</a>
-                  <a href="/islom/export-pdf" class="btn btn-primary">PDF Export</a>
+            <div class="row">
+               <div class="col-lg-4 mb-lg-0 mb-3">
+                  <a href="/islom/download" class="btn btn-dark text-white w-100">Barchasini yuklab olish</a>
                </div>
-               <form action="/delete" method="post">
-                  <button class="btn btn-danger">
+               <div class="col-lg-4 mb-lg-0 mb-3">
+                  <a href="/islom/export-pdf" class="btn btn-primary w-100">PDF Export</a>
+               </div>
+               <form action="/delete" method="post" class="col-lg-4">
+                  <button class="btn btn-danger d-lg-inline-block w-100">
                      Barchasini o'chirish
                   </button>
                </form>
