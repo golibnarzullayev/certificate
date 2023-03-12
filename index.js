@@ -4,8 +4,9 @@ dotenv.config();
 const app = express();
 const flash = require('express-flash');
 const session = require('express-session')
-const { create } = require('express-handlebars');
+const exphbs = require('express-handlebars');
 const MongoStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 const expressFileUpload = require('express-fileupload');
 const indexRoute = require('./routes')
 const connectDB = require('./config/db')
@@ -27,17 +28,16 @@ app.use(session({
    resave: true,
    saveUninitialized: true
 }))
-
+app.use(csrf());
 app.use(flash());
 
-const hbs = create({
-   defaultLayout: 'main',
-   extname: 'hbs'
-})
-app.engine('hbs', hbs.engine);
-app.set('view engine', 'hbs');
-app.set('views', './views');
+app.engine('.hbs', exphbs.engine({ extname: '.hbs' }));
+app.set('view engine', '.hbs');
 
+app.use((req, res, next) => {
+   res.locals.csrfToken = req.csrfToken();
+   next();
+})
 
 app.use('/', indexRoute);
 app.get('*', (req, res) => {
