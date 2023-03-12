@@ -1,10 +1,7 @@
 const fs = require('fs');
-const fsExtra = require('fs-extra');
 const PDFDocument = require('pdfkit');
 const Sertificate = require('../models/sertificate.model');
 const path = require('path');
-const https = require('https')
-const http = require('http')
 
 exports.createPDF = async (res, unlinkFile) => {
    try {
@@ -25,10 +22,10 @@ exports.createPDF = async (res, unlinkFile) => {
             layout: 'landscape',
             size: [595.28, 841.89], // A4
             margins: {
-               top: 20,
-               bottom: 20,
-               left: 20,
-               right: 20
+               top: 0,
+               bottom: 0,
+               left: 0,
+               right: 0
             }
          });
 

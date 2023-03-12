@@ -1,17 +1,15 @@
 const path = require('path');
 const fs = require('fs');
-const archiver = require('archiver');
 const readXlsxFile = require('read-excel-file/node');
 const Sertificate = require('../models/sertificate.model');
 const File = require('../models/file.model');
-const Jimp = require('jimp');
-const qr = require('qrcode');
-const moment = require('moment');
 const util = require('util');
 const { createPDF } = require('../utils/createPdf');
-const publicPath = path.join(__dirname, '..', 'public', 'create');
 const zipFileName = 'public_files.zip';
 const unlinkFile = util.promisify(fs.unlink);
+const textData  = require('../utils/textData');
+const renderImage = require('../utils/renderImage');
+const createZipFile = require('../utils/createZipFile')
 
 exports.homePage = async (req, res) => {
    try {
@@ -112,6 +110,7 @@ exports.generate = async (req, res) => {
       const pathName = fileBase.fileName.split('_')[0];
       const users = [];
       const rows = await readXlsxFile(fs.createReadStream(`public${filePath}`));
+      
       if (rows !== undefined) {
          let keys = rows[0], obj = {};
          for (let i = 1; i < rows.length; i++) {
@@ -120,10 +119,11 @@ exports.generate = async (req, res) => {
                obj[keys[j]] = item[j]
             }
             users.push(obj);
+            const data = textData(obj, pathName)
             if (pathName === 'davlat') {
-               await renderGovernmentImage(obj, pathName)
+               await renderImage(pathName, data, 'davlat')
             } else {
-               await renderImage(obj, pathName)
+               await renderImage(pathName, data, 'other')
             }
          }
       }
@@ -137,12 +137,18 @@ exports.generate = async (req, res) => {
 exports.deleteAll = async (req, res) => {
    try {
       const sertificates = await Sertificate.find();
+      const files = await File.find();
 
       for (let i = 0; i < sertificates.length; i++) {
          const fileName = sertificates[i].file.split('/')[2];
          const currentPath = path.join(__dirname, '..', `public/create/${fileName}`)
          const movePath = path.join(__dirname, '..', `public/certificate/${fileName}`)
          fs.renameSync(currentPath, movePath);
+      }
+
+      for (let i = 0; i < files.length; i++) {
+         const fileName = files[i].file.split('/')[2];
+         await fs.unlinkSync(path.join(__dirname, '..', `public/upload/${fileName}`))
       }
 
       await File.deleteMany()
@@ -162,161 +168,9 @@ exports.exportPDF = async (req, res) => {
    }
 }
 
-async function renderImage(user, pathName) {
-   try {
-      const imgRaw = path.join(__dirname, '..', 'public', 'active', pathName, 'active.png');
-      const font_42_path = path.join(__dirname, '..', 'public', 'fonts', 'font_42.ttf.fnt');
-      const font_100_path = path.join(__dirname, '..', 'public', 'fonts', 'font_100.ttf.fnt');
-
-      const font_42 = await Jimp.loadFont(font_42_path)
-      const font_100 = await Jimp.loadFont(font_100_path)
-
-      const fullNameTextData = {
-         text: user.fullName.toUpperCase(),
-         placementX: 140,
-         placementY: 850
-      }
-
-      const idTextData = {
-         text: `ID: ${user.id}`,
-         placementX: 1860,
-         placementY: 1320
-      }
-
-      const dateTextData = {
-         text: moment(user.date).format('DD.MM.YYYY'),
-         placementX: 1845,
-         placementY: 1470
-      }
-
-      const url = `https://certificate.tezzkor.com/certificate/${user.id}.png`;
-
-      const options = {
-         type: 'png'
-      };
-      const outputPath = path.join(__dirname, '..', 'public', 'qr', `${user.id}.png`)
-      await qr.toFile(outputPath, url, options);
-      const image = await Jimp.read(imgRaw);
-      const qrCodeUrl = path.join(__dirname, '..', 'public', 'qr', `${user.id}.png`);
-      const qrImage = await Jimp.read(qrCodeUrl);
-      qrImage.resize(314, 314);
-
-      image.composite(qrImage, 1710, 100)
-
-      image.print(
-         font_100,
-         fullNameTextData.placementX,
-         fullNameTextData.placementY,
-         fullNameTextData.text
-      )
-
-      image.print(
-         font_42,
-         idTextData.placementX,
-         idTextData.placementY,
-         idTextData.text
-      )
-
-      image.print(
-         font_42,
-         dateTextData.placementX,
-         dateTextData.placementY,
-         dateTextData.text
-      )
-
-      // /export/${pathName}/${user.fileName}_${user.id}.png
-      await image.quality(100).writeAsync(path.join(__dirname, '..', 'public', 'create', `${user.id}.png`));
-
-      await Sertificate.create({
-         fullName: user.fullName,
-         file: `/sertificate/${user.id}.png`,
-         sertificateId: user.id
-      })
-      
-   } catch (err) {
-      console.log(err);
-   }
-}
-
-async function renderGovernmentImage(user, pathName) {
-   try {
-      const imgRaw = path.join(__dirname, '..', 'public', 'active', pathName, 'active.png');
-      const montserrat_40_path = path.join(__dirname, '..', 'public', 'fonts', 'montserrat_40.ttf.fnt');
-      const montserrat_47_path = path.join(__dirname, '..', 'public', 'fonts', 'montserrat_47.ttf.fnt');
-      const montserrat_100_path = path.join(__dirname, '..', 'public', 'fonts', 'montserrat_100.ttf.fnt');
-
-      const montserrat_40 = await Jimp.loadFont(montserrat_40_path)
-      const montserrat_47 = await Jimp.loadFont(montserrat_47_path)
-      const montserrat_100 = await Jimp.loadFont(montserrat_100_path)
-
-      const fullNameTextData = {
-         text: user.fullName.toUpperCase(),
-         placementX: 450,
-         placementY: 730
-      }
-
-      const idTextData = {
-         text: `ID: ${user.id}`,
-         placementX: 2200,
-         placementY: 1650,
-      }
-
-      const dateTextData = {
-         text: moment(user.date).format('DD.MM.YYYY'),
-         placementX: 1150,
-         placementY: 1130
-      }
-
-      const url = `https://certificate.tezzkor.com/certificate/${user.id}.png`;
-
-      const options = {
-         type: 'png'
-      };
-      const outputPath = path.join(__dirname, '..', 'public', 'qr', `${user.id}.png`)
-      await qr.toFile(outputPath, url, options);
-      const image = await Jimp.read(imgRaw);
-      const qrCodeUrl = path.join(__dirname, '..', 'public', 'qr', `${user.id}.png`);
-      const qrImage = await Jimp.read(qrCodeUrl);
-      qrImage.resize(314, 314);
-
-      image.composite(qrImage, 2077, 110)
-
-      image.print(montserrat_100, fullNameTextData.placementX, fullNameTextData.placementY, {
-         text: fullNameTextData.text,
-         alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
-      }, 1640)
-
-      image.print(
-         montserrat_40,
-         idTextData.placementX,
-         idTextData.placementY,
-         
-      )
-
-      image.print(
-         montserrat_47,
-         dateTextData.placementX,
-         dateTextData.placementY,
-         dateTextData.text
-      )
-
-      // /export/${pathName}/${user.fileName}_${user.id}.png
-      await image.quality(100).writeAsync(path.join(__dirname, '..', 'public', 'create', `${user.id}.png`));
-
-      await Sertificate.create({
-         fullName: user.fullName,
-         file: `/sertificate/${user.id}.png`,
-         sertificateId: user.id
-      })
-      
-   } catch (err) {
-      console.log(err);
-   }
-}
-
 exports.download = async (req, res) => {
    try {
-      const zipFilePath = await createZipFile();
+      const zipFilePath = await createZipFile(zipFileName);
 
       res.download(zipFilePath, zipFileName, async function(err) {
          if (err) {
@@ -327,28 +181,4 @@ exports.download = async (req, res) => {
    } catch (err) {
       console.log(err);
    }
-}
-
-async function createZipFile() {
-   const archive = archiver('zip', { zlib: { level: 9 }});
-   const zipFilePath = path.join(__dirname, '..', 'public', `export/${zipFileName}`);
-
-   // Fayllarni ZIP fayliga qo'shish
-   archive.directory(publicPath, false);
- 
-   // ZIP faylini yaratish
-   const output = fs.createWriteStream(zipFilePath);
-   archive.pipe(output);
- 
-   return new Promise((resolve, reject) => {
-      output.on('close', function() {
-         resolve(zipFilePath);
-      });
-   
-      archive.on('error', function(err) {
-         reject(err);
-      });
-   
-      archive.finalize();
-   });
 }
