@@ -9,7 +9,7 @@ const MongoStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const expressFileUpload = require('express-fileupload');
 const indexRoute = require('./routes')
-const connectDB = require('./config/db')
+const connectDB = require('./config/db');
 
 const store = new MongoStore({
    uri: process.env.MONGO_URL,

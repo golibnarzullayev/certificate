@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const readXlsxFile = require('read-excel-file/node');
+const xlsx = require('xlsx');
 const Sertificate = require('../models/sertificate.model');
 const File = require('../models/file.model');
 const util = require('util');
@@ -100,6 +100,7 @@ exports.generatePage = async (req, res) => {
 exports.generate = async (req, res) => {
    try {
       const { file } = req.body
+      console.log(file);
 
       if (!file) {
          req.flash('generateErr', 'Fayl tanlanmadi!')
@@ -109,17 +110,14 @@ exports.generate = async (req, res) => {
       const filePath = fileBase.file;
       const pathName = fileBase.fileName.split('_')[0];
       const users = [];
-      const rows = await readXlsxFile(fs.createReadStream(`public${filePath}`));
+      const workbook = xlsx.readFile(`public${filePath}`);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = xlsx.utils.sheet_to_json(worksheet);
       
       if (rows !== undefined) {
-         let keys = rows[0], obj = {};
-         for (let i = 1; i < rows.length; i++) {
+         for (let i = 0; i < rows.length; i++) {
             let item = rows[i];
-            for (let j=0; j < item.length; j++) {
-               obj[keys[j]] = item[j]
-            }
-            users.push(obj);
-            const data = textData(obj, pathName)
+            const data = textData(item, pathName)
             if (pathName === 'davlat') {
                await renderImage(pathName, data, 'davlat')
             } else {

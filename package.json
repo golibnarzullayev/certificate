@@ -28,7 +28,8 @@
     "pdf-lib": "^1.17.1",
     "pdfkit": "^0.13.0",
     "qrcode": "^1.5.1",
-    "read-excel-file": "^5.6.1"
+    "read-excel-file": "^5.6.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.21"
