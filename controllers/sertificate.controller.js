@@ -9,7 +9,7 @@ const zipFileName = 'public_files.zip';
 const unlinkFile = util.promisify(fs.unlink);
 const textData  = require('../utils/textData');
 const renderImage = require('../utils/renderImage');
-const createZipFile = require('../utils/createZipFile')
+const createZipFile = require('../utils/createZipFile');
 
 exports.homePage = async (req, res) => {
    try {
@@ -99,33 +99,36 @@ exports.generatePage = async (req, res) => {
 
 exports.generate = async (req, res) => {
    try {
-      const { file } = req.body
-      console.log(file);
+      const { file } = req.body;
 
       if (!file) {
          req.flash('generateErr', 'Fayl tanlanmadi!')
          return res.redirect('/islom/generate')
       }
-      const fileBase = await File.findById(file).lean();
-      const filePath = fileBase.file;
-      const pathName = fileBase.fileName.split('_')[0];
-      const workbook = xlsx.readFile(`public${filePath}`);
-      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = xlsx.utils.sheet_to_json(worksheet);
-      
-      if (rows !== undefined) {
-         for (let i = 0; i < rows.length; i++) {
-            let item = rows[i];
-            const data = textData(item, pathName)
-            if (pathName === 'davlat') {
-               await renderImage(pathName, data, 'davlat')
-            } else {
-               await renderImage(pathName, data, 'other')
+      async function generatedWebSocket() {
+         const fileBase = await File.findById(file).lean();
+         const filePath = fileBase.file;
+         const pathName = fileBase.fileName.split('_')[0];
+         const workbook = xlsx.readFile(`public${filePath}`);
+         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+         const rows = xlsx.utils.sheet_to_json(worksheet);
+         
+         if (rows !== undefined) {
+            for (let i = 0; i < rows.length; i++) {
+               let item = rows[i];
+               const data = textData(item, pathName)
+               if (pathName === 'davlat') {
+                  await renderImage(pathName, data, 'davlat')
+               } else {
+                  await renderImage(pathName, data, 'other')
+               }
             }
          }
+
+         res.redirect('/islom')
       }
 
-      res.redirect('/islom')
+      generatedWebSocket();
    } catch (err) {
       console.log(err);
    }

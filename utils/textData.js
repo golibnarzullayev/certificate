@@ -13,8 +13,10 @@ function textData(user, type) {
       placementY: type === 'davlat' ? 1650 : 1320
    }
 
+   let date_obj = new Date((user.date - 25569) * 86400 * 1000);
+
    const dateTextData = {
-      text: moment(new Date(user.date)).format('DD.MM.YYYY'),
+      text: date_obj.toLocaleDateString('en-GB'),
       placementX: type === 'davlat' ? 1150 : 1845,
       placementY: type === 'davlat' ? 1130 : 1470
    }

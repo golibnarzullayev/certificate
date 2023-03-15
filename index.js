@@ -5,12 +5,12 @@ const app = express();
 const flash = require('express-flash');
 const session = require('express-session')
 const exphbs = require('express-handlebars');
-const WebSocket = require('ws');
 const MongoStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const expressFileUpload = require('express-fileupload');
 const indexRoute = require('./routes')
 const connectDB = require('./config/db');
+const http = require('http');
 
 const store = new MongoStore({
    uri: process.env.MONGO_URL,
@@ -48,15 +48,8 @@ app.get('*', (req, res) => {
 })
 
 const port = process.env.PORT || 4000;
-const server = app.listen(port, async () => {
-   console.log(`Server running on port: ${port}`);
-   await connectDB();
-})
-
-const wss = new WebSocket.Server({ server });
-
-wss.on('connection', (ws) => {
-   console.log(`Connected web socket`);
-})
-
-module.exports = wss;
+const server = http.createServer(app);
+server.listen(port, () => {
+   connectDB()
+   console.log(`Server started at http://localhost:${port}`);
+});
