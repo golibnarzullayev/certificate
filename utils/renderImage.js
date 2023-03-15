@@ -21,7 +21,7 @@ async function renderImage(pathName, textData, type) {
       const font_42 = await Jimp.loadFont(font_42_path)
       const font_100 = await Jimp.loadFont(font_100_path)
 
-      const url = `https://certificate.tezzkor.com/certificate/${textData.id}.png`;
+      const url = `https://itpark-qarshi.uz/certificate/${textData.id}.png`;
 
       const options = {
          type: 'png'
