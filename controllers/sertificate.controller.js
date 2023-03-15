@@ -109,7 +109,6 @@ exports.generate = async (req, res) => {
       const fileBase = await File.findById(file).lean();
       const filePath = fileBase.file;
       const pathName = fileBase.fileName.split('_')[0];
-      const users = [];
       const workbook = xlsx.readFile(`public${filePath}`);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const rows = xlsx.utils.sheet_to_json(worksheet);
