@@ -8,7 +8,7 @@ function textData(user, type) {
    }
 
    const idTextData = {
-      text: `ID: ${user.id}`,
+      text: type == 'davlat' ? `${user.id}` : `ID: ${user.id}`,
       placementX: type === 'davlat' ? 2200 : 1860,
       placementY: type === 'davlat' ? 1650 : 1320
    }

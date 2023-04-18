@@ -33,7 +33,7 @@ async function renderImage(pathName, textData, type) {
       const qrImage = await Jimp.read(qrCodeUrl);
       qrImage.resize(314, 314);
 
-      image.composite(qrImage, type == 'davlat' ? 1800 : 1710, 100)
+      image.composite(qrImage, type == 'davlat' ? 2100 : 1710, 100)
 
       if (type === 'davlat') {
          image.print(montserrat_100, textData.fullNameTextData.placementX, textData.fullNameTextData.placementY, {
