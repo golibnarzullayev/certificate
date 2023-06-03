@@ -29,16 +29,16 @@ app.use(session({
    resave: true,
    saveUninitialized: true
 }))
-// app.use(csrf());
+app.use(csrf());
 app.use(flash());
 
 app.engine('.hbs', exphbs.engine({ extname: '.hbs' }));
 app.set('view engine', '.hbs');
 
-// app.use((req, res, next) => {
-//    res.locals.csrfToken = req.csrfToken();
-//    next();
-// })
+app.use((req, res, next) => {
+   res.locals.csrfToken = req.csrfToken();
+   next();
+})
 
 app.use('/', indexRoute);
 app.get('*', (req, res) => {
