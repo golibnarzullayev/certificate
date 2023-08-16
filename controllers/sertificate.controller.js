@@ -10,6 +10,7 @@ const unlinkFile = util.promisify(fs.unlink);
 const textData  = require('../utils/textData');
 const renderImage = require('../utils/renderImage');
 const createZipFile = require('../utils/createZipFile');
+const EventEmitter = require('events');
 
 exports.homePage = async (req, res) => {
    try {
@@ -128,7 +129,10 @@ exports.generate = async (req, res) => {
          res.redirect('/islom')
       }
 
-      generatedWebSocket();
+      const eventEmitter = new EventEmitter();
+      eventEmitter.on('generate', generatedWebSocket);
+      eventEmitter.emit('generate');
+
    } catch (err) {
       console.log(err);
    }
