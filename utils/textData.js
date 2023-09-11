@@ -3,7 +3,7 @@ const moment = require('moment');
 function textData(user, type) {
    const fullNameTextData = {
       text: user.fullName.toUpperCase(),
-      placementX: type === 'davlat' ? 450 : 140,
+      placementX: type === 'davlat' ? 250 : 140,
       placementY: type === 'davlat' ? 730 : 850
    }
 

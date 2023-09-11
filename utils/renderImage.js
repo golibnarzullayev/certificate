@@ -38,8 +38,8 @@ async function renderImage(pathName, textData, type) {
       if (type === 'davlat') {
          image.print(montserrat_100, textData.fullNameTextData.placementX, textData.fullNameTextData.placementY, {
             text: textData.fullNameTextData.text,
-            alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
-         }, 1640)
+            alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+         }, 2000)
       } else {
          image.print(
             font_100,
