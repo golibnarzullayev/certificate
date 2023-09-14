@@ -1,4 +1,4 @@
-name: Production deployment
+name: Production deployment with pm2
 
 on:
   pull_request:
@@ -35,4 +35,3 @@ jobs:
 
       - name: restart nginx
         run: sudo service nginx restart
-        
