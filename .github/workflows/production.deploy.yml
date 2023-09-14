@@ -35,3 +35,4 @@ jobs:
 
       - name: restart nginx
         run: sudo service nginx restart
+        
