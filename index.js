@@ -29,7 +29,6 @@ app.use(session({
    resave: true,
    saveUninitialized: true
 }))
-app.use(csrf());
 app.use(flash());
 
 app.engine('.hbs', exphbs.engine({ extname: '.hbs' }));
