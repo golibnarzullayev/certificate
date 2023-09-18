@@ -44,6 +44,11 @@ exports.uploadPage = async (req, res) => {
 
 exports.upload = async (req, res) => {
    try {
+      const uploadFolderExists = fs.existsSync('public/upload');
+      if (!uploadFolderExists) {
+         fs.mkdirSync('public/upload');
+      }
+
       if (!req.files) {
          req.flash('uploadErr', 'fayl yuklanmagan')
          return res.redirect('/islom/upload')
