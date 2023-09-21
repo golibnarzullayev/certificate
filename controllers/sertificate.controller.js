@@ -145,20 +145,7 @@ exports.generate = async (req, res) => {
 
 exports.deleteAll = async (req, res) => {
    try {
-      const sertificates = await Sertificate.find();
       const files = await File.find();
-
-      for (let i = 0; i < sertificates.length; i++) {
-         const fileName = sertificates[i].file.split('/')[2];
-         const currentPath = path.join(__dirname, '..', `public/create/${fileName}`);
-         if (fs.existsSync(currentPath)) {
-            fs.unlinkSync(currentPath);
-         }
-         const movePath = path.join(__dirname, '..', `public/certificate/${fileName}`)
-         if (fs.existsSync(movePath)) {
-            fs.renameSync(currentPath, movePath);
-         }
-      }
 
       for (let i = 0; i < files.length; i++) {
          const fileName = files[i].file.split('/')[2];

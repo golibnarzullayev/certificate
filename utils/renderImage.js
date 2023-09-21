@@ -64,7 +64,7 @@ async function renderImage(pathName, textData, type) {
       )
 
       // /export/${pathName}/${user.fileName}_${user.id}.png
-      await image.quality(100).writeAsync(path.join(__dirname, '..', 'public', 'create', `${textData.id}.png`));
+      await image.quality(100).writeAsync(path.join(__dirname, '..', 'public', 'certificate', `${textData.id}.png`));
 
       await Sertificate.create({
          fullName: textData.fullNameTextData.text,
