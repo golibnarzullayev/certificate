@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const xlsx = require('xlsx');
-const Sertificate = require('../models/sertificate.model');
+const Certificate = require('../models/sertificate.model');
 const File = require('../models/file.model');
 const util = require('util');
 const { createPDF } = require('../utils/createPdf');
@@ -16,7 +16,7 @@ exports.homePage = async (req, res) => {
    try {
       const isLogged = req.session.isLogged;
       const downloadErr = req.flash('downloadErr')[0]
-      const sertificates = await Sertificate.find().lean();
+      const sertificates = await Certificate.find().lean();
       res.render('home', {
          title: "Bosh sahifa",
          sertificates: sertificates.reverse(),
@@ -24,7 +24,7 @@ exports.homePage = async (req, res) => {
          isLogged
       })
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 
@@ -38,7 +38,7 @@ exports.uploadPage = async (req, res) => {
          isLogged
       })
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 
@@ -83,7 +83,7 @@ exports.upload = async (req, res) => {
 
       res.redirect('/islom/generate')
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 
@@ -93,13 +93,13 @@ exports.generatePage = async (req, res) => {
       const files = await File.find().lean();
       const generateErr = req.flash('generateErr')[0]
       res.render('generate', {
-         title: 'Generate Sertificate',
+         title: 'Generate Certificate',
          files: files.reverse(),
          error: generateErr,
          isLogged
       })
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 
@@ -139,28 +139,39 @@ exports.generate = async (req, res) => {
       eventEmitter.emit('generate');
 
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 
 exports.deleteAll = async (req, res) => {
    try {
       const files = await File.find();
+      const certificates = await Certificate.find();
+
+      for (let i = 0; i < certificates.length; i++) {
+         const certificateBaseName = certificates[i].file.split('/')[2]
+         const createPath = path.join(__dirname, '..', `public/create/${certificateBaseName}`);
+
+         if (fs.existsSync(createPath)) {
+            fs.unlinkSync(createPath)
+         }
+      }
 
       for (let i = 0; i < files.length; i++) {
          const fileName = files[i].file.split('/')[2];
+
          const filePath = path.join(__dirname, '..', `public/upload/${fileName}`)
          if (fs.existsSync(filePath)) {
-            await fs.unlinkSync(filePath)
+            fs.unlinkSync(filePath)
          }
       }
 
       await File.deleteMany()
-      await Sertificate.deleteMany()
+      await Certificate.deleteMany()
 
       res.redirect('/islom');
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 
@@ -168,7 +179,7 @@ exports.exportPDF = async (req, res) => {
    try {
       await createPDF(res, unlinkFile);
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 
@@ -183,6 +194,6 @@ exports.download = async (req, res) => {
          await unlinkFile(zipFilePath);
       });
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }

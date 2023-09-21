@@ -19,4 +19,4 @@ const sertificateSchema = new Schema({
    timestamps: true
 })
 
-module.exports = model('Sertificate', sertificateSchema);
+module.exports = model('Certificate', sertificateSchema);

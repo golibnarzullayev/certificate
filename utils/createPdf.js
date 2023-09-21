@@ -1,17 +1,17 @@
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
-const Sertificate = require('../models/sertificate.model');
+const Certificate = require('../models/sertificate.model');
 const path = require('path');
 
 exports.createPDF = async (res, unlinkFile) => {
    try {
       const doc = new PDFDocument();
-      const sertificates = await Sertificate.find();
+      const certificates = await Certificate.find();
       const images = [];
 
-      for (let i = 0; i < sertificates.length; i++) {
-         const sertificate = sertificates[i].file.split('/')[2]
-         const image = path.join(__dirname, '..', `public/create/${sertificate}`)
+      for (let i = 0; i < certificates.length; i++) {
+         const certificateBaseName = certificates[i].file.split('/')[2]
+         const image = path.join(__dirname, '..', `public/certificate/${certificateBaseName}`)
          images.push(image);
       }
 
@@ -55,6 +55,6 @@ exports.createPDF = async (res, unlinkFile) => {
          await unlinkFile(outputPath);
       });
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }

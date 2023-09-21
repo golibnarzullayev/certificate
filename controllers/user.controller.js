@@ -35,7 +35,7 @@ exports.registerUser = async (req, res) => {
       return res.status(201).json({ message: "Success" })
 
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 
@@ -60,7 +60,7 @@ exports.login = async (req, res) => {
       req.session.isLogged = true
       res.redirect('/islom')
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 

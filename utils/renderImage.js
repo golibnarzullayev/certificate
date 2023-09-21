@@ -1,4 +1,4 @@
-const Sertificate = require('../models/sertificate.model')
+const Certificate = require('../models/sertificate.model')
 const Jimp = require('jimp')
 const path = require('path');
 const fs = require('fs');
@@ -66,7 +66,7 @@ async function renderImage(pathName, textData, type) {
       // /export/${pathName}/${user.fileName}_${user.id}.png
       await image.quality(100).writeAsync(path.join(__dirname, '..', 'public', 'certificate', `${textData.id}.png`));
 
-      await Sertificate.create({
+      await Certificate.create({
          fullName: textData.fullNameTextData.text,
          file: `/sertificate/${textData.id}.png`,
          sertificateId: textData.id
@@ -75,7 +75,7 @@ async function renderImage(pathName, textData, type) {
       await fs.unlinkSync(qrCodeUrl);
       
    } catch (err) {
-      console.log(err);
+      throw new Error(err);
    }
 }
 
