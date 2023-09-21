@@ -164,7 +164,7 @@ exports.deleteAll = async (req, res) => {
          const fileName = files[i].file.split('/')[2];
          const filePath = path.join(__dirname, '..', `public/upload/${fileName}`)
          if (fs.existsSync(filePath)) {
-            await fs.unlinkSync()
+            await fs.unlinkSync(filePath)
          }
       }
 
