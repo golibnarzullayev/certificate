@@ -150,7 +150,10 @@ exports.deleteAll = async (req, res) => {
 
       for (let i = 0; i < sertificates.length; i++) {
          const fileName = sertificates[i].file.split('/')[2];
-         const currentPath = path.join(__dirname, '..', `public/create/${fileName}`)
+         const currentPath = path.join(__dirname, '..', `public/create/${fileName}`);
+         if (fs.existsSync(currentPath)) {
+            fs.unlinkSync(currentPath);
+         }
          const movePath = path.join(__dirname, '..', `public/certificate/${fileName}`)
          fs.renameSync(currentPath, movePath);
       }
