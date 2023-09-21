@@ -155,7 +155,7 @@ exports.deleteAll = async (req, res) => {
             fs.unlinkSync(currentPath);
          }
          const movePath = path.join(__dirname, '..', `public/certificate/${fileName}`)
-         if (!fs.existsSync(movePath)) {
+         if (fs.existsSync(movePath)) {
             fs.renameSync(currentPath, movePath);
          }
       }
