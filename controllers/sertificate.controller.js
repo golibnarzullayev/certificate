@@ -162,7 +162,10 @@ exports.deleteAll = async (req, res) => {
 
       for (let i = 0; i < files.length; i++) {
          const fileName = files[i].file.split('/')[2];
-         await fs.unlinkSync(path.join(__dirname, '..', `public/upload/${fileName}`))
+         const filePath = path.join(__dirname, '..', `public/upload/${fileName}`)
+         if (fs.existsSync(filePath)) {
+            await fs.unlinkSync()
+         }
       }
 
       await File.deleteMany()
