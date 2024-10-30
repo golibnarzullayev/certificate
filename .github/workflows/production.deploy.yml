@@ -11,15 +11,6 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Add stash all changes
-        run: git stash
-
-      - name: Pull request
-        run: git pull
-
-      - name: Remove stash changes
-        run: git stash clear
-
       - uses: actions/setup-node@v1
       - name: Install dependencies
         run: npm install
